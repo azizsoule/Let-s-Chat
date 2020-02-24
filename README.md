@@ -5,6 +5,8 @@ I want to build a messaging app using firebase.
  
 In my app anybody who has an account can discuss with someone else who has an account.
 
+⚠️ This Application is not finished.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
