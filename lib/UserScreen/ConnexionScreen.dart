@@ -18,6 +18,9 @@ class ConnexionScreen extends StatelessWidget {
 
   PersonalInput password = new PersonalInput(hinText: "Password", color: themeColor,control: new TextEditingController(),icon: Icon(CupertinoIcons.padlock),obscur: true,isPassWordField: true,);
 
+  SharedPreferences preference;
+
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -115,7 +118,7 @@ class ConnexionScreen extends StatelessWidget {
   }
 
   void saveUser(String pseudo) async {
-    SharedPreferences preference = await SharedPreferences.getInstance();
-    preference.setString('userPseudo', pseudo);
+    this.preference = await SharedPreferences.getInstance();
+    this.preference.setString('userPseudo', pseudo);
   }
 }

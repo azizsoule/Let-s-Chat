@@ -6,7 +6,7 @@ class Message extends StatelessWidget {
 
   bool areYouSender;
 
-  Message({this.message, this.areYouSender = false });
+  Message(String exp, this.message, this.areYouSender );
 
   String get getMessage => this.message;
 
