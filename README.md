@@ -1,6 +1,9 @@
 # lets_chat
 
 A new Flutter application.
+I want to build a messaging app using firebase.
+ 
+In my app anybody who has an account can discuss with someone else who has an account.
 
 ## Getting Started
 
