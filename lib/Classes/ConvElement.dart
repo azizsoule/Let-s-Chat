@@ -4,12 +4,12 @@ class ConvElement{
   String content;
   String destinataireUid;
   String date;
-  bool isSender;
+  //bool isSender;
 
-  ConvElement(this.expediteurUid, this.content, this.destinataireUid, this.isSender, this.date);
+  ConvElement(this.expediteurUid, this.content, this.destinataireUid, this.date);
 
   factory ConvElement.fromJson(Map<String, dynamic> json) {
-    return ConvElement(json["expediteurUid"],json["content"],json["destinataireUid"],json["isSender"],json["date"]);
+    return ConvElement(json["expediteurUid"],json["content"],json["destinataireUid"],json["date"]);
   }
 
   Map<String, dynamic> toJson() {
@@ -17,7 +17,7 @@ class ConvElement{
       "expediteurUid": this.expediteurUid,
       "content": this.content,
       "destinataireUid": this.destinataireUid,
-      "isSender": this.isSender,
+      //"isSender": this.isSender,
       "date": this.date,
     };
   }

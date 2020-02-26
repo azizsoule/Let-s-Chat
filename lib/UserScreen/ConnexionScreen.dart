@@ -50,6 +50,7 @@ class ConnexionScreen extends StatelessWidget {
       Navigator.of(context).pop();
       showAlertDialog(context, "Veuillez remplir tous les champs !!!");
     }else {
+
       Future<bool> result = docExist(pseudo);
 
       result.then((value) {

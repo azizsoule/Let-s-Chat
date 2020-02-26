@@ -52,7 +52,7 @@ class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
             for(element in snapshots.data.documents) {
 
               if(widget.pseudo != element.data['pseudo']) {
-                widget.items.add(buildListItem(context: context,data: element,));
+                widget.items.add(buildListItem(context: context,data: element,pseudo: widget.pseudo,));
               }
 
             }
@@ -74,8 +74,9 @@ class buildListItem extends StatelessWidget {
 
   BuildContext context;
   DocumentSnapshot data;
+  String pseudo;
 
-  buildListItem({this.context, this.data});
+  buildListItem({this.context, this.data, this.pseudo});
 
 
   @override
@@ -88,7 +89,7 @@ class buildListItem extends StatelessWidget {
           Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (context) {
-                    return ConversationUserScreen(friend: data['pseudo'],);
+                    return ConversationUserScreen(friend: data['pseudo'],user: pseudo,);
                   }
               )
           );
