@@ -68,7 +68,7 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             StreamBuilder(
-                stream: Firestore.instance.collection('discussion').orderBy('date').snapshots(),
+                stream: Firestore.instance.collection('discussion').orderBy('date',descending: true).snapshots(),
                 builder: (context, snapshot) {
 
                   DocumentSnapshot docSnap ;
@@ -98,6 +98,7 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
 
                   return Expanded(
                     child: ListView.builder(
+                      reverse: true,
                       itemCount: messages.length,
                       itemBuilder: (context, i) {
                         return messages[i];
