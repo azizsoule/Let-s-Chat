@@ -15,8 +15,8 @@ class ConnectedUserHomeScreen extends StatefulWidget {
   ConnectedUserHomeScreen(
   {
     this.pseudo
-}
-      );
+  }
+  );
 
   @override
   _ConnectedUserHomeScreenState createState() => _ConnectedUserHomeScreenState();
