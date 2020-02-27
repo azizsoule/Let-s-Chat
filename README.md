@@ -21,7 +21,7 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 # Screenshots
-<img src="screenshots/1.jpg"><img src="2.jpg"><img src="3.jpg">
-<img src="4.jpg"><img src="5.jpg"><img src="6.jpg">
+<img src="screenshots/1.jpg"><img src="screenshots/2.jpg"><img src="screenshots/3.jpg">
+<img src="screenshots/4.jpg"><img src="screenshots/5.jpg"><img src="screenshots/6.jpg">
 
 
