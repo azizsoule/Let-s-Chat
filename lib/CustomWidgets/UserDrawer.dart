@@ -6,111 +6,126 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lets_chat/AlertDialog/AlertDialog.dart';
 
-Widget UserDrawer(String userPseudo) {
-  return StreamBuilder(
-      stream: Firestore.instance.collection("comptes").document(userPseudo).snapshots(),
-      builder: (context, snapshot) {
+class UserDrawer extends StatefulWidget {
+  @override
+  _UserDrawerState createState() => _UserDrawerState();
 
-        if(!snapshot.hasData) {
-          return CircularProgressIndicator();
-        }
+  String userPseudo;
+  BuildContext context;
 
-        return Drawer(
-          child: Column(
-            children: <Widget>[
-              Container(
-                height: 200,
-                child: Image.asset(
-                  'assets/images/profil.jpg',
-                  fit: BoxFit.fill,
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          DrawerItems("Pseudo", 'pseudo', snapshot.data),
-                        ],
-                      ),
-
-                      Row(
-                        children: <Widget>[
-                          DrawerItems("Nom", 'nom', snapshot.data),
-                        ],
-                      ),
-
-                      Row(
-                        children: <Widget>[
-                          DrawerItems("Prenoms", 'prenoms', snapshot.data),
-                        ],
-                      ),
-
-                      Row(
-                        children: <Widget>[
-                          DrawerItems("Password", 'password', snapshot.data),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(CupertinoIcons.clear_circled,color: Colors.black,size: 30,),
-                    tooltip: "Deconnexion",
-                    onPressed: () {
-                      deconnexion () async{
-                        SharedPreferences pref = await SharedPreferences.getInstance();
-                        pref.setString('userPseudo', "");
-
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) {
-                                  return LetsChatApp();
-                                }
-                            ),
-                            ModalRoute.withName(""));
-                      }
-
-                      deconnexion();
-                    },
-                  ),
-
-                  IconButton(
-                    tooltip: "Parametres",
-                    icon: Icon(CupertinoIcons.settings,color: Colors.black,size: 30,),
-                    onPressed: () {
-
-                    },
-                  ),
-                ],
-              )
-            ],
-          ),
-        );
-      }
-  );
+  UserDrawer( this.userPseudo, this.context);
 }
 
-Widget DrawerItems(String title,String key,DocumentSnapshot data)  {
-  return Expanded(
-    child: Container(
-      margin: EdgeInsets.only(top: 20,left: 20,right: 20),
-      padding: EdgeInsets.all(20),
-      child: Column(
-        children: <Widget>[
-          Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-          Text(data[key], style: TextStyle(fontSize: 15,color: Colors.grey),)
-        ],
+class _UserDrawerState extends State<UserDrawer> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Container(
+          height: 200,
+          child: Image.asset(
+            'assets/images/profil.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+        Expanded(
+          child: StreamBuilder(
+              stream: Firestore.instance.collection("comptes").document(widget.userPseudo).snapshots(),
+              builder: (context, snapshot) {
+
+                if(!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                } else {
+                  return Drawer(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              DrawerItems("Pseudo", 'pseudo', snapshot.data),
+                            ],
+                          ),
+
+                          Row(
+                            children: <Widget>[
+                              DrawerItems("Nom", 'nom', snapshot.data),
+                            ],
+                          ),
+
+                          Row(
+                            children: <Widget>[
+                              DrawerItems("Prenoms", 'prenoms', snapshot.data),
+                            ],
+                          ),
+
+                          Row(
+                            children: <Widget>[
+                              DrawerItems("Password", 'password', snapshot.data),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              }
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(CupertinoIcons.clear_circled,color: Colors.black,size: 30,),
+              tooltip: "Deconnexion",
+              onPressed: () {
+                deconnexion(context,widget.userPseudo);
+              },
+            ),
+
+            IconButton(
+              tooltip: "Parametres",
+              icon: Icon(CupertinoIcons.settings,color: Colors.black,size: 30,),
+              onPressed: () {
+
+              },
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget DrawerItems(String title,String key,DocumentSnapshot data)  {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(top: 20,left: 20,right: 20),
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: <Widget>[
+            Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+            Text(data[key], style: TextStyle(fontSize: 15,color: Colors.grey),)
+          ],
+        ),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.black)
+        ),
       ),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.black)
-      ),
-    ),
-  );
+    );
+  }
+
+  deconnexion (BuildContext context, String pseudo) async{
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setString('userPseudo', "");
+    Firestore.instance.collection("comptes").document(pseudo).updateData({"connected": false});
+    Navigator.pop(context);
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) {
+              return LetsChatApp();
+            }
+        ),
+        ModalRoute.withName(""));
+  }
+
 }

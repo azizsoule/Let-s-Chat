@@ -101,6 +101,9 @@ class ConnexionScreen extends StatelessWidget {
             Navigator.of(context).pop();
             saveUser(pseudo);
             //showAlertDialog(context, "connexion reussie");
+
+            fireStoreConnector.collection('comptes').document(pseudo).updateData({"connected":true});
+
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
                   builder: (context) {

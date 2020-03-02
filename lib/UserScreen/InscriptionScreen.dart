@@ -145,7 +145,7 @@ class InscriptionScreen extends StatelessWidget {
 
     final fireStoreConnector = Firestore.instance;
 
-    final Map<String,dynamic> data = {"pseudo":pseudo,"nom":nom,"prenoms":prenoms,"password":password};
+    final Map<String,dynamic> data = {"pseudo":pseudo,"nom":nom,"prenoms":prenoms,"password":password,"connected": false};
 
     await fireStoreConnector.collection("comptes")
         .document(pseudo)

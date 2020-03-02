@@ -24,7 +24,7 @@ class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
       debugShowCheckedModeBanner: false,
       title: "Let's Chat",
       home: Scaffold(
-        drawer: UserDrawer(widget.pseudo),
+        drawer: Drawer(child: UserDrawer(widget.pseudo, context)),
         appBar: AppBar(
           backgroundColor: Colors.black,
           title: Text("Let's Chat"),
@@ -34,26 +34,26 @@ class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
           stream: Firestore.instance.collection("comptes").snapshots(),
           builder: (context, snapshots) {
             if (!snapshots.hasData) {
-              return CircularProgressIndicator();
-            }
+              return Text("Aucun utilisateur");
+            } else {
+              DocumentSnapshot element;
 
-            DocumentSnapshot element;
+              //Future<String> userPseudo = getUser();
 
-            //Future<String> userPseudo = getUser();
-
-            for (element in snapshots.data.documents) {
-              if (widget.pseudo != element.data['pseudo']) {
-                widget.items.add(buildListItem(
-                  context: context,
-                  data: element,
-                  pseudo: widget.pseudo,
-                ));
+              for (element in snapshots.data.documents) {
+                if (widget.pseudo != element.data['pseudo']) {
+                  widget.items.add(buildListItem(
+                    context: context,
+                    data: element,
+                    pseudo: widget.pseudo,
+                  ));
+                }
               }
-            }
 
-            return ListView(
-              children: widget.items,
-            );
+              return ListView(
+                children: widget.items,
+              );
+            }
           },
         ),
       ),
