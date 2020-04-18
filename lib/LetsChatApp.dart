@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lets_chat/HomeScreen.dart';
+import 'package:lets_chat/views/HomeScreen.dart';
 
 class LetsChatApp extends StatelessWidget {
   @override

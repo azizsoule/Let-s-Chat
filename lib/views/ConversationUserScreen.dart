@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:lets_chat/Classes/ConvElement.dart';
-import 'package:lets_chat/CustomWidgets/PersonnalInput.dart';
-import 'package:lets_chat/CustomWidgets/Message.dart';
+import 'package:lets_chat/models/ConvElement.dart';
+import 'package:lets_chat/widgets/PersonnalInput.dart';
+import 'package:lets_chat/widgets/Message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 

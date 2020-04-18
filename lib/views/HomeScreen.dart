@@ -2,8 +2,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lets_chat/UserScreen/ConnexionScreen.dart';
-import 'package:lets_chat/UserScreen/InscriptionScreen.dart';
+import 'package:lets_chat/views/ConnexionScreen.dart';
+import 'package:lets_chat/views/InscriptionScreen.dart';
 
 class HomeScreen extends StatelessWidget {
 

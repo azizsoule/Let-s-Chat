@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lets_chat/AlertDialog/AlertDialog.dart';
+import 'package:lets_chat/views/AlertDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lets_chat/CustomWidgets/UserDrawer.dart';
-import 'package:lets_chat/UserScreen/ConversationUserScreen.dart';
+import 'package:lets_chat/widgets/UserDrawer.dart';
+import 'package:lets_chat/views/ConversationUserScreen.dart';
 
 class ConnectedUserHomeScreen extends StatefulWidget {
   List<Widget> items = [];

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'UserScreen/ConnectedUserHomeScreen.dart';
+import 'views/ConnectedUserHomeScreen.dart';
 import 'package:lets_chat/LetsChatApp.dart';
-import 'package:lets_chat/UserScreen/ConversationUserScreen.dart';
-import 'package:lets_chat/Classes/User.dart';
+import 'package:lets_chat/views/ConversationUserScreen.dart';
+import 'package:lets_chat/models/User.dart';
 
 void main() {
 

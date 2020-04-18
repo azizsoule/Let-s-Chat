@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:lets_chat/CustomWidgets/PersonalButon.dart';
-import 'package:lets_chat/CustomWidgets/PersonnalInput.dart';
+import 'package:lets_chat/widgets/PersonalButon.dart';
+import 'package:lets_chat/widgets/PersonnalInput.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lets_chat/AlertDialog/AlertDialog.dart';
+import 'package:lets_chat/views/AlertDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lets_chat/UserScreen/ConnectedUserHomeScreen.dart';
+import 'package:lets_chat/views/ConnectedUserHomeScreen.dart';
 
 
 

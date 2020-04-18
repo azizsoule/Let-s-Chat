@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lets_chat/AlertDialog/AlertDialog.dart';
+import 'package:lets_chat/views/AlertDialog.dart';
+import 'package:lets_chat/views/SettingScreen.dart';
 
 class UserDrawer extends StatefulWidget {
   @override
@@ -86,7 +87,11 @@ class _UserDrawerState extends State<UserDrawer> {
               tooltip: "Parametres",
               icon: Icon(CupertinoIcons.settings,color: Colors.black,size: 30,),
               onPressed: () {
-
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) {
+                    return SettingScreen();
+                  })
+                );
               },
             ),
           ],
@@ -96,6 +101,13 @@ class _UserDrawerState extends State<UserDrawer> {
   }
 
   Widget DrawerItems(String title,String key,DocumentSnapshot data)  {
+
+    var password = "";
+
+    for(int i= 0; i<data['password'].length;i++) {
+      password = password + "*";
+    }
+
     return Expanded(
       child: Container(
         margin: EdgeInsets.only(top: 20,left: 20,right: 20),
@@ -103,7 +115,7 @@ class _UserDrawerState extends State<UserDrawer> {
         child: Column(
           children: <Widget>[
             Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-            Text(data[key], style: TextStyle(fontSize: 15,color: Colors.grey),)
+            Text(password, style: TextStyle(fontSize: 15,color: Colors.grey),)
           ],
         ),
         decoration: BoxDecoration(

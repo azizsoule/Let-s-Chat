@@ -1,7 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
-import 'package:lets_chat/UserScreen/ConnectedUserHomeScreen.dart';
+import 'package:lets_chat/views/ConnectedUserHomeScreen.dart';
 
 Future<Database> open () async{
   return openDatabase(

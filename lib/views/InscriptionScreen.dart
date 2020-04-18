@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lets_chat/CustomWidgets/PersonalButon.dart';
-import 'package:lets_chat/CustomWidgets/PersonnalInput.dart';
+import 'package:lets_chat/widgets/PersonalButon.dart';
+import 'package:lets_chat/widgets/PersonnalInput.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lets_chat/AlertDialog/AlertDialog.dart';
+import 'package:lets_chat/views/AlertDialog.dart';
 
 
 class InscriptionScreen extends StatelessWidget {
