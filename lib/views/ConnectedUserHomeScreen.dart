@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lets_chat/views/AlertDialog.dart';
+import 'package:lets_chat/widgets/AlertDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lets_chat/widgets/UserDrawer.dart';
 import 'package:lets_chat/views/ConversationUserScreen.dart';
@@ -20,42 +20,44 @@ class ConnectedUserHomeScreen extends StatefulWidget {
 class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Let's Chat",
-      home: Scaffold(
-        drawer: Drawer(child: UserDrawer(widget.pseudo, context)),
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          title: Text("Let's Chat"),
-          centerTitle: true,
-        ),
-        body: StreamBuilder(
-          stream: Firestore.instance.collection("comptes").snapshots(),
-          builder: (context, snapshots) {
-            if (!snapshots.hasData) {
-              return Text("Aucun utilisateur");
-            } else {
-              DocumentSnapshot element;
+    return Scaffold(
+      drawer: Drawer(child: UserDrawer(widget.pseudo, context)),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text("Let's Chat"),
+        centerTitle: true,
+      ),
+      body: StreamBuilder(
+        stream: Firestore.instance.collection("comptes").snapshots(),
+        builder: (context, snapshots) {
+          if (!snapshots.hasData) {
+            return Center(child: Text("Aucun utilisateur"));
+          } else {
+            widget.items.clear();
 
-              //Future<String> userPseudo = getUser();
+            DocumentSnapshot element;
 
-              for (element in snapshots.data.documents) {
-                if (widget.pseudo != element.data['pseudo']) {
-                  widget.items.add(buildListItem(
-                    context: context,
-                    data: element,
-                    pseudo: widget.pseudo,
-                  ));
-                }
+            //Future<String> userPseudo = getUser();
+
+            for (element in snapshots.data.documents) {
+              if (widget.pseudo != element.data['pseudo']) {
+                widget.items.add(buildListItem(
+                  context: context,
+                  data: element,
+                  pseudo: widget.pseudo,
+                ));
               }
-
-              return ListView(
-                children: widget.items,
-              );
             }
-          },
-        ),
+
+            return ListView.builder(
+              physics: BouncingScrollPhysics(),
+              itemCount: widget.items.length,
+              itemBuilder: (context, index) {
+                return widget.items[index];
+              },
+            );
+          }
+        },
       ),
     );
   }
@@ -99,15 +101,21 @@ class buildListItem extends StatelessWidget {
             );
           }));
         },
-        title: Text("Pseudo : " + data['pseudo']),
-        subtitle: Text(
-            "Nom : " + data['nom'] + "\n" + "Prenoms : " + data['prenoms']),
+         leading: CircleAvatar(
+            backgroundColor: Colors.black,
+         ),
+        title: Text(data['pseudo']),
         trailing: isConnected(),
       ),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.all(Radius.circular(8))
-      ),
+         color: Colors.white,
+          boxShadow: <BoxShadow> [
+             BoxShadow(
+                color: Colors.grey,
+                blurRadius: 10,
+             )
+          ],
+          borderRadius: BorderRadius.all(Radius.circular(10))),
     );
   }
 }

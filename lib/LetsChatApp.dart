@@ -1,13 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:lets_chat/views/HomeScreen.dart';
+import 'functions/functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lets_chat/views/ConnectedUserHomeScreen.dart';
 
-class LetsChatApp extends StatelessWidget {
+
+class LetsChatApp extends StatefulWidget {
+
+  @override
+  _LetsChatAppState createState() => _LetsChatAppState();
+}
+
+class _LetsChatAppState extends State<LetsChatApp> {
+
+  String user;
+
+  @override
+  void initState() {
+    super.initState();
+    restore();
+  }
+
+  restore() async {
+    final SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    setState(() {
+      this.user = (sharedPrefs.getString('user') ?? null);
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
-      title: "Let's Chat",
-    );
+
+     if (this.user == null) {
+        return MaterialApp(
+           debugShowCheckedModeBanner: false,
+           home: HomeScreen(),
+           title: "Let's Chat",
+        );
+     } else {
+        return MaterialApp(
+           debugShowCheckedModeBanner: false,
+           home: ConnectedUserHomeScreen(
+             pseudo: this.user,
+           ),
+           title: "Let's Chat",
+        );
+     }
+
   }
 }

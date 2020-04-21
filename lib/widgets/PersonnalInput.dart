@@ -15,7 +15,11 @@ class PersonalInput extends StatefulWidget {
   int num = 0;
   int maxLines;
   int minLines;
+  double padLeft;
+  double padRight;
+  double borderWidth;
   TextInputType keyBoard;
+  bool enabled;
 
   PersonalInput({
     this.hinText = "",
@@ -27,7 +31,11 @@ class PersonalInput extends StatefulWidget {
     this.isPassWordField = false,
     this.minLines = 1,
     this.maxLines = 1,
-    this.keyBoard = TextInputType.text
+    this.keyBoard = TextInputType.text,
+    this.padLeft = 5,
+    this.padRight = 5,
+    this.borderWidth = 1.0,
+    this.enabled = true
   });
 
 
@@ -49,12 +57,13 @@ class _PersonalInputState extends State<PersonalInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 5,right: 5),
+      padding: EdgeInsets.only(left: widget.padLeft,right: widget.padRight),
       decoration: BoxDecoration(
-          border: Border.all(color: widget.color),
+          border: Border.all(color: widget.color,width: widget.borderWidth),
         borderRadius: BorderRadius.circular(widget.radius)
       ),
       child: TextFormField(
+        enabled: widget.enabled,
         keyboardType: widget.keyBoard,
         maxLines: widget.maxLines,
         minLines: widget.minLines,

@@ -28,7 +28,12 @@ class Message extends StatelessWidget {
   }
 
   EdgeInsets pad() {
-    return EdgeInsets.only(top: 10,bottom: 10,right: 10,left: 10);
+    if(this.userPseudo == this.expe) {
+      return EdgeInsets.only(top: 10,bottom: 10,right: 10,left: 50);
+    }
+    else {
+      return EdgeInsets.only(top: 10,bottom: 10,right: 50,left: 10);
+    }
   }
 
   BoxDecoration deco () {

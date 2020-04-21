@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lets_chat/views/AlertDialog.dart';
-import 'package:lets_chat/views/SettingScreen.dart';
+import 'package:lets_chat/widgets/AlertDialog.dart';
+import 'package:lets_chat/views/EditScreen.dart';
 
 class UserDrawer extends StatefulWidget {
   @override
@@ -77,19 +77,19 @@ class _UserDrawerState extends State<UserDrawer> {
           children: <Widget>[
             IconButton(
               icon: Icon(CupertinoIcons.clear_circled,color: Colors.black,size: 30,),
-              tooltip: "Deconnexion",
+              tooltip: "Déconnexion",
               onPressed: () {
-                deconnexion(context,widget.userPseudo);
+                deConnexion(context,widget.userPseudo);
               },
             ),
 
             IconButton(
-              tooltip: "Parametres",
-              icon: Icon(CupertinoIcons.settings,color: Colors.black,size: 30,),
+              tooltip: "Editer",
+              icon: Icon(CupertinoIcons.create,color: Colors.black,size: 30,),
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) {
-                    return SettingScreen();
+                    return EditScreen(context: context,pseudo: widget.userPseudo,);
                   })
                 );
               },
@@ -108,36 +108,54 @@ class _UserDrawerState extends State<UserDrawer> {
       password = password + "*";
     }
 
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(top: 20,left: 20,right: 20),
-        padding: EdgeInsets.all(20),
-        child: Column(
-          children: <Widget>[
-            Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-            Text(password, style: TextStyle(fontSize: 15,color: Colors.grey),)
-          ],
+    if(key=='password') {
+      return Expanded(
+        child: Container(
+          margin: EdgeInsets.only(top: 20,left: 20,right: 20),
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: <Widget>[
+              Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+              Text(password, style: TextStyle(fontSize: 15,color: Colors.grey),)
+            ],
+          ),
+          decoration: BoxDecoration(
+             borderRadius: BorderRadius.circular(10),
+             border: Border.all(color: Colors.black)
+          ),
         ),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.black)
+      );
+    } else {
+      return Expanded(
+        child: Container(
+          margin: EdgeInsets.only(top: 20,left: 20,right: 20),
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: <Widget>[
+              Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+              Text(data[key], style: TextStyle(fontSize: 15,color: Colors.grey),)
+            ],
+          ),
+          decoration: BoxDecoration(
+             borderRadius: BorderRadius.circular(10),
+             border: Border.all(color: Colors.black)
+          ),
         ),
-      ),
-    );
+      );
+    }
+
   }
 
-  deconnexion (BuildContext context, String pseudo) async{
+  deConnexion (BuildContext context, String pseudo) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setString('userPseudo', "");
-    Firestore.instance.collection("comptes").document(pseudo).updateData({"connected": false});
-    Navigator.pop(context);
+    pref.remove('user');
+    Firestore.instance.collection("comptes").document(pseudo).updateData(
+       {"connected": false});
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-            builder: (context) {
-              return LetsChatApp();
-            }
-        ),
-        ModalRoute.withName(""));
+       MaterialPageRoute(
+         builder: (context) {
+           return LetsChatApp();
+         }
+       ), (Route<dynamic> route) => false);
   }
-
 }

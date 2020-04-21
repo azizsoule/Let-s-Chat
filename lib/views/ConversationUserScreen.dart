@@ -31,7 +31,7 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
   List<Widget> messages = [
   ];
 
-  PersonalInput message = new PersonalInput(isPassWordField: false,radius: 5,control: new TextEditingController(),color: Colors.black,maxLines: 3,keyBoard: TextInputType.multiline,);
+  PersonalInput message = new PersonalInput(isPassWordField: false,radius: 30,control: new TextEditingController(),color: Colors.black,maxLines: 3,keyBoard: TextInputType.multiline,padLeft: 20,padRight: 20,borderWidth: 2,);
 
   ScrollController control = new ScrollController(initialScrollOffset: 20);
 
@@ -49,92 +49,104 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Let's Chat",
-      home: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(widget.friend),
-          backgroundColor: Colors.black,
-          leading: IconButton(
-              icon: Icon(CupertinoIcons.left_chevron,),
-              onPressed: () {
-                Navigator.of(context).pop();
-              }),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(widget.friend),
+        backgroundColor: Colors.black,
+      ),
 
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            StreamBuilder(
-                stream: Firestore.instance.collection('discussion').orderBy('date',descending: true).snapshots(),
-                builder: (context, snapshot) {
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          StreamBuilder(
+             stream: Firestore.instance.collection('discussion').orderBy('date',descending: true).snapshots(),
+             builder: (context, snapshot) {
 
-                  DocumentSnapshot docSnap ;
+               DocumentSnapshot docSnap ;
 
-                  messages.clear();
+               messages.clear();
 
-                  for (docSnap in snapshot.data.documents) {
-                    if((docSnap.data['expediteurUid']==widget.user && docSnap.data['destinataireUid']==widget.friend) || (docSnap.data['expediteurUid']==widget.friend && docSnap.data['destinataireUid']==widget.user)) {
-                      messages.add(Message(docSnap.data['expediteurUid'],docSnap.data['content'],widget.user));
-                    }
-                  }
+               for (docSnap in snapshot.data.documents) {
+                 if((docSnap.data['expediteurUid']==widget.user && docSnap.data['destinataireUid']==widget.friend) || (docSnap.data['expediteurUid']==widget.friend && docSnap.data['destinataireUid']==widget.user)) {
+                   messages.add(Message(docSnap.data['expediteurUid'],docSnap.data['content'],widget.user));
+                 }
+               }
 
-                  if(messages.length == 0) {
-                    return Expanded(
-                      child: Center(
-                        child: Container(
-                          padding: EdgeInsets.only(top: 13, bottom: 13, left: 20, right: 20),
-                          child: Text("Vous pouvez envoyer des messages à ${widget.friend}", style: TextStyle(color: Colors.white),),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
+               if(messages.length == 0) {
+                 return Expanded(
+                   child: Center(
+                     child: Container(
+                       padding: EdgeInsets.only(top: 13, bottom: 13, left: 20, right: 20),
+                       child: Text("Vous pouvez envoyer des messages à ${widget.friend}", style: TextStyle(color: Colors.white),),
+                       decoration: BoxDecoration(
+                         color: Colors.black,
+                         borderRadius: BorderRadius.circular(20),
+                       ),
+                     ),
+                   ),
+                 );
+               }
 
-                  return Expanded(
-                    child: ListView.builder(
-                      reverse: true,
-                      itemCount: messages.length,
-                      itemBuilder: (context, i) {
-                        return messages[i];
-                      },
-                      controller: control,
-                    ),
-                  );
-                }
+               return Expanded(
+                 child: ListView.builder(
+                   physics: BouncingScrollPhysics(),
+                   reverse: true,
+                   itemCount: messages.length,
+                   itemBuilder: (context, i) {
+                     return messages[i];
+                   },
+                   controller: control,
+                 ),
+               );
+             }
+          ),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10)),
+              color: Colors.white,
+              boxShadow: <BoxShadow> [
+                BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 10,
+
+                )
+              ]
             ),
-            Container(
-              margin: EdgeInsets.only(left: 20,bottom: 20,top: 20),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: message,
+            padding: EdgeInsets.only(left: 20,bottom: 10,top: 10),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: message,
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 10, right: 10),
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(100)
                   ),
-                  IconButton(
-                      icon: Icon(
-                        CupertinoIcons.right_chevron,
-                        size: 30,
-                      ),
-                      onPressed: (){
-                        if(message.getControllerText.isNotEmpty && message.getControllerText.trim() != "") {
-                          this.sendMessage(this.preferences.getString('userPseudo'), message.getControllerText, widget.friend, Timestamp.now().seconds.toString());
-                          setState(() {
-                            //messages.add(Message(this.preferences.getString('userPseudo'), message.getControllerText));
-                            message.setControllerText = "";
-                          });
-                        }
-                      }
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
+                  child: IconButton(
+                     icon: Icon(
+                       Icons.send,
+                       size: 30,
+                       color: Colors.white,
+                     ),
+                     onPressed: (){
+                       if(message.getControllerText.isNotEmpty && message.getControllerText.trim() != "") {
+                         this.sendMessage(this.preferences.getString('user'), message.getControllerText, widget.friend, Timestamp.now().seconds.toString());
+                         setState(() {
+                           //messages.add(Message(this.preferences.getString('userPseudo'), message.getControllerText));
+                           message.setControllerText = "";
+                         });
+                       }
+                     }
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
