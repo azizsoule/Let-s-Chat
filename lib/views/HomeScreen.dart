@@ -14,7 +14,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-   final Color themeColor = Colors.black;
 
    int index = 0;
 
@@ -38,13 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
    Widget build(BuildContext context) {
       return Scaffold(
          appBar: AppBar(
-            backgroundColor: themeColor,
             title: Text("Let's Chat",style: TextStyle(fontWeight: FontWeight.bold),),
             centerTitle: true,
          ),
 
          bottomNavigationBar: BottomNavigationBar(
-            backgroundColor: themeColor,
             showUnselectedLabels: false,
             currentIndex: index,
             onTap: (id) {

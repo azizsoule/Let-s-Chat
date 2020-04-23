@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lets_chat/views/HomeScreen.dart';
-import 'functions/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lets_chat/views/ConnectedUserHomeScreen.dart';
 
@@ -37,6 +36,11 @@ class _LetsChatAppState extends State<LetsChatApp> {
            debugShowCheckedModeBanner: false,
            home: HomeScreen(),
            title: "Let's Chat",
+           theme: ThemeData(
+              primarySwatch: Colors.blue,
+              primaryColor: Color(0xff0378e5),
+              fontFamily: 'Nunito'
+           ),
         );
      } else {
         return MaterialApp(
@@ -45,6 +49,11 @@ class _LetsChatAppState extends State<LetsChatApp> {
              pseudo: this.user,
            ),
            title: "Let's Chat",
+           theme: ThemeData(
+              primarySwatch: Colors.blue,
+              primaryColor: Color(0xff0378e5),
+              fontFamily: 'Nunito'
+           ),
         );
      }
 

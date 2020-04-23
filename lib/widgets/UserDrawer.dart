@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lets_chat/widgets/AlertDialog.dart';
 import 'package:lets_chat/views/EditScreen.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class UserDrawer extends StatefulWidget {
   @override
@@ -18,16 +19,23 @@ class UserDrawer extends StatefulWidget {
 }
 
 class _UserDrawerState extends State<UserDrawer> {
+
+  String defaultAvatarImg =
+     "https://firebasestorage.googleapis.com/v0/b/letschat-1234.appspot.com/o/avatar.png?alt=media&token=b7575fdd-ca24-4569-b0c5-fb597e52da23";
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Container(
-          height: 200,
-          child: Image.asset(
-            'assets/images/profil.jpg',
-            fit: BoxFit.fill,
-          ),
+        FutureBuilder(
+           future: FirebaseStorage.instance.ref().child('profils/${widget.userPseudo}').getDownloadURL(),
+           builder: (context,url) {
+             if(!url.hasData) {
+               return Image.asset(defaultAvatarImg,height: 200,fit: BoxFit.cover,);
+             }else {
+               return Image.network(url.data, height: 200,fit: BoxFit.scaleDown,);
+             }
+           }
         ),
         Expanded(
           child: StreamBuilder(

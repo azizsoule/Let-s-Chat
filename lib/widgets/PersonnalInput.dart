@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lets_chat/style/style.dart';
 
 // ignore: must_be_immutable
 class PersonalInput extends StatefulWidget {
@@ -24,7 +25,7 @@ class PersonalInput extends StatefulWidget {
   PersonalInput({
     this.hinText = "",
     this.control,
-    this.radius = 10,
+    this.radius = 30.0,
     this.icon,
     this.color = Colors.black,
     this.obscur = false,
@@ -57,12 +58,13 @@ class _PersonalInputState extends State<PersonalInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: widget.padLeft,right: widget.padRight),
+      padding: EdgeInsets.symmetric(horizontal: 10.0),
       decoration: BoxDecoration(
-          border: Border.all(color: widget.color,width: widget.borderWidth),
-        borderRadius: BorderRadius.circular(widget.radius)
-      ),
+         color: background,
+         boxShadow: softShadowsInvert,
+         borderRadius: BorderRadius.circular(widget.radius)),
       child: TextFormField(
+        style: TextStyle(color: textColor, fontSize: 16.0),
         enabled: widget.enabled,
         keyboardType: widget.keyBoard,
         maxLines: widget.maxLines,
@@ -87,6 +89,11 @@ class _PersonalInputState extends State<PersonalInput> {
           icon: widget.icon,
           border: InputBorder.none,
           hintText: widget.hinText,
+          hintStyle: TextStyle(color: textColor.withOpacity(.6)),
+           filled: false,
+           isDense: true,
+           contentPadding: EdgeInsets.symmetric(
+              horizontal: 6.0, vertical: 12.0),
         ),
       ),
     );
