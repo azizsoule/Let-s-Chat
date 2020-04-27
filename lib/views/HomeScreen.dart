@@ -1,11 +1,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lets_chat/views/ConnexionScreen.dart';
 import 'package:lets_chat/views/InscriptionScreen.dart';
-import 'package:lets_chat/widgets/AlertDialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lets_chat/style/style.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -36,10 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
    @override
    Widget build(BuildContext context) {
       return Scaffold(
-         appBar: AppBar(
-            title: Text("Let's Chat",style: TextStyle(fontWeight: FontWeight.bold),),
-            centerTitle: true,
-         ),
 
          bottomNavigationBar: BottomNavigationBar(
             showUnselectedLabels: false,
@@ -53,19 +47,46 @@ class _HomeScreenState extends State<HomeScreen> {
             items: <BottomNavigationBarItem> [
 
                BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.person,color: Colors.white,),
-                  title: Text("Connexion",style: TextStyle(color: Colors.white),),
+                  icon: Icon(CupertinoIcons.person,color: textColor,),
+                  title: Text("Connexion",style: TextStyle(color: textColor),),
                ),
 
                BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.person_add,color: Colors.white),
-                  title: Text("Inscription",style: TextStyle(color: Colors.white)),
+                  icon: Icon(CupertinoIcons.person_add,color: textColor),
+                  title: Text("Inscription",style: TextStyle(color: textColor)),
                )
 
             ],
          ),
 
-         body: Body(index),
+         body: SafeArea(
+           child: Column(
+             children: <Widget>[
+                Container(
+                   padding: EdgeInsets.all(30),
+                   decoration: BoxDecoration(
+                      boxShadow:softShadows
+                   ),
+                   child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                         Center(
+                           child: Text(
+                              "Let's Chat",
+                              style: TextStyle(
+                                 color: textColor,
+                                 fontSize: 25,
+                                 fontWeight: FontWeight.bold),
+                           ),
+                         ),
+                      ],
+                   ),
+                ),
+
+               Expanded(child: Body(index)),
+             ],
+           ),
+         ),
 
       );
    }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lets_chat/functions/functions.dart';
 import 'package:lets_chat/style/style.dart';
 import 'package:lets_chat/widgets/UserDrawer.dart';
 import 'package:lets_chat/views/ConversationUserScreen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:lets_chat/widgets/avatar.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class ConnectedUserHomeScreen extends StatefulWidget {
   List<Widget> items = [];
@@ -20,15 +21,37 @@ class ConnectedUserHomeScreen extends StatefulWidget {
 }
 
 class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
-  String defaultAvatarImg = "https://firebasestorage.googleapis.com/v0/b/letschat-1234.appspot.com/o/avatar.png?alt=media&token=b7575fdd-ca24-4569-b0c5-fb597e52da23";
+
+  final FirebaseMessaging _fcm = new FirebaseMessaging();
+
+  String defaultAvatarImg =
+      "https://firebasestorage.googleapis.com/v0/b/letschat-1234.appspot.com/o/avatar.png?alt=media&token=b7575fdd-ca24-4569-b0c5-fb597e52da23";
 
   String userAvatar;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _fcm.configure(
+       onMessage: (message) {
+         print(message);
+         return null;
+       },
+       onResume: (message) {
+         print(message);
+         return null;
+       },
+       onLaunch: (message) {
+         print(message);
+         return null;
+       }
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
       drawer: Drawer(child: UserDrawer(widget.pseudo, context)),
       body: Container(
@@ -42,23 +65,23 @@ class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
                 child: Row(
                   children: <Widget>[
                     FutureBuilder(
-                       future: FirebaseStorage.instance
-                          .ref()
-                          .child('profils/${widget.pseudo}')
-                          .getDownloadURL(),
-                       builder: (context, url) {
-                         if (!url.hasData) {
-                           return Avatar(
-                             url: defaultAvatarImg,
-                             isOnline: false,
-                           );
-                         } else {
-                           return Avatar(
-                             url: url.data,
-                             isOnline: false,
-                           );
-                         }
-                       }),
+                        future: FirebaseStorage.instance
+                            .ref()
+                            .child('profils/${widget.pseudo}')
+                            .getDownloadURL(),
+                        builder: (context, url) {
+                          if (!url.hasData) {
+                            return Avatar(
+                              url: defaultAvatarImg,
+                              isOnline: false,
+                            );
+                          } else {
+                            return Avatar(
+                              url: url.data,
+                              isOnline: false,
+                            );
+                          }
+                        }),
 
                     SizedBox(width: 10.0),
                     // name
@@ -129,7 +152,23 @@ class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
                 stream: Firestore.instance.collection("comptes").snapshots(),
                 builder: (context, snapshots) {
                   if (!snapshots.hasData) {
-                    return Center(child: Text("Aucun utilisateur"));
+                    return Expanded(
+                       child: Center(
+                          child: Container(
+                             padding: EdgeInsets.only(
+                                top: 13, bottom: 13, left: 20, right: 20),
+                             child: Text(
+                                "Aucun utilisateur !",
+                                style: TextStyle(color: textColor,),
+                             ),
+                             decoration: BoxDecoration(
+                                color: background,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: softShadows
+                             ),
+                          ),
+                       ),
+                    );
                   } else {
                     widget.items.clear();
 
@@ -196,46 +235,89 @@ class buildListItem extends StatelessWidget {
   }
 // no need of the file extension, the name will do fine.
 
+  List<dynamic> messages = [];
+
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 12, right: 12),
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return ConversationUserScreen(
-            friend: data['pseudo'],
-            user: pseudo,
-            friendIsConnected: data['connected'],
-          );
-        }));
-      },
-      leading: FutureBuilder(
-          future: FirebaseStorage.instance
-              .ref()
-              .child('profils/${data['pseudo']}')
-              .getDownloadURL(),
-          builder: (context, url) {
-            if (!url.hasData) {
-              return Avatar(
-                url: defaultAvatarImg,
-                isOnline: data['connected'],
+    return StreamBuilder(
+      stream: Firestore.instance
+         .collection('discussion')
+         .orderBy('date')
+         .snapshots(),
+      builder: (context, snapshot) {
+        DocumentSnapshot docSnap;
 
+        //messages.clear();
+
+        for (docSnap in snapshot.data.documents) {
+          if ((docSnap.data['expediteurUid'] == pseudo &&
+             docSnap.data['destinataireUid'] == data['pseudo']) ||
+             (docSnap.data['expediteurUid'] == data['pseudo'] &&
+                docSnap.data['destinataireUid'] == pseudo)) {
+            messages.add({
+              "message": docSnap.data['content'],
+              "date": docSnap.data['date'],
+              "type": docSnap.data['type']
+            });
+          }
+        }
+
+        String lastMes;
+        var time;
+
+        if(messages.length == 0) {
+          lastMes = "Aucun message";
+          time = "";
+        }else {
+          if(messages.last['type'] == "text") {
+            lastMes = messages.last['message'];
+            time = messages.last['date'].toDate().hour.toString() + ":" + messages.last['date'].toDate().minute.toString();
+          }
+
+          if(messages.last['type'] == "image") {
+            lastMes = "Photo";
+            time = messages.last['date'].toDate().hour.toString() + ":" + messages.last['date'].toDate().minute.toString();
+          }
+        }
+
+        return ListTile(
+          contentPadding: EdgeInsets.only(top: 15, bottom: 15, left: 12, right: 12),
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return ConversationUserScreen(
+                friend: data['pseudo'],
+                user: pseudo,
+                friendIsConnected: data['connected'],
               );
-            } else {
-              return Avatar(
-                url: url.data,
-                isOnline: data['connected'],
-              );
-            }
-          }),
-      title: Text(data['pseudo'],style: TextStyle(
-         color: textColor,
-         fontSize: 17.0,
-         fontWeight: FontWeight.bold)),
-      subtitle: Text("Message"),
-      trailing: Text(
-          "${Timestamp.now().toDate().hour}:${Timestamp.now().toDate().minute}",
-          style: TextStyle(color: textColor.withOpacity(.6), fontSize: 14.0)),
+            }));
+          },
+          leading: FutureBuilder(
+              future: FirebaseStorage.instance
+                  .ref()
+                  .child('profils/${data['pseudo']}')
+                  .getDownloadURL(),
+              builder: (context, url) {
+                if (!url.hasData) {
+                  return Avatar(
+                    url: defaultAvatarImg,
+                    isOnline: data['connected'],
+                  );
+                } else {
+                  return Avatar(
+                    url: url.data,
+                    isOnline: data['connected'],
+                  );
+                }
+              }),
+          title: Text(data['pseudo'],
+              style: TextStyle(
+                  color: textColor, fontSize: 17.0, fontWeight: FontWeight.bold)),
+          subtitle: Text(lastMes),
+          trailing: Text(
+              time,
+              style: TextStyle(color: textColor.withOpacity(.6), fontSize: 14.0)),
+        );
+      }
     );
   }
 }

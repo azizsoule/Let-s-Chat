@@ -21,6 +21,7 @@ class PersonalInput extends StatefulWidget {
   double borderWidth;
   TextInputType keyBoard;
   bool enabled;
+  bool autoFaucus;
 
   PersonalInput({
     this.hinText = "",
@@ -36,7 +37,8 @@ class PersonalInput extends StatefulWidget {
     this.padLeft = 5,
     this.padRight = 5,
     this.borderWidth = 1.0,
-    this.enabled = true
+    this.enabled = true,
+    this.autoFaucus = false
   });
 
 
@@ -64,6 +66,7 @@ class _PersonalInputState extends State<PersonalInput> {
          boxShadow: softShadowsInvert,
          borderRadius: BorderRadius.circular(widget.radius)),
       child: TextFormField(
+        autofocus: widget.autoFaucus,
         style: TextStyle(color: textColor, fontSize: 16.0),
         enabled: widget.enabled,
         keyboardType: widget.keyBoard,
@@ -93,7 +96,7 @@ class _PersonalInputState extends State<PersonalInput> {
            filled: false,
            isDense: true,
            contentPadding: EdgeInsets.symmetric(
-              horizontal: 6.0, vertical: 12.0),
+              horizontal: 6.0, vertical: 8.0),
         ),
       ),
     );

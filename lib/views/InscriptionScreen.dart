@@ -6,10 +6,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:lets_chat/widgets/AlertDialog.dart';
 import 'package:lets_chat/functions/functions.dart';
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
-class InscriptionScreen extends StatelessWidget {
+class InscriptionScreen extends StatefulWidget {
 
+  @override
+  _InscriptionScreenState createState() => _InscriptionScreenState();
+}
+
+class _InscriptionScreenState extends State<InscriptionScreen> {
    final Color themeColor = Colors.black;
 
    final PersonalInput nom = new PersonalInput(hinText: "Nom", color: Colors.black,control: new TextEditingController(),icon: Icon(CupertinoIcons.person_add),);
@@ -22,6 +28,24 @@ class InscriptionScreen extends StatelessWidget {
 
    final PersonalInput confirmPassword = new PersonalInput(hinText: "Confirm Password", color: Colors.black,control: new TextEditingController(),icon: Icon(CupertinoIcons.padlock),obscur: true,isPassWordField: true,);
 
+   final FirebaseMessaging _fcm = new FirebaseMessaging();
+
+   var token;
+
+   @override
+   void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    dynamic getTok() async{
+       return await getFuture(_fcm.getToken());
+    }
+
+    token = getTok();
+
+    print(token);
+
+  }
 
    @override
    Widget build(BuildContext context) {
@@ -68,9 +92,6 @@ class InscriptionScreen extends StatelessWidget {
       );
    }
 
-
-
-
    void check(String pseudo, String nom , String prenoms ,String password, String confPassword,BuildContext context) async {
       if(pseudo.isEmpty || nom.isEmpty || prenoms.isEmpty || confPassword.isEmpty) {
 
@@ -116,5 +137,4 @@ class InscriptionScreen extends StatelessWidget {
 
       }
    }
-
 }

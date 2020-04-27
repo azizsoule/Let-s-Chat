@@ -51,8 +51,6 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
      hinText: "Entrez votre message ...",
   );
 
-  ScrollController control = new ScrollController(initialScrollOffset: 20);
-
   @override
   void initState() {
     // TODO: implement initState
@@ -191,7 +189,6 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                       itemBuilder: (context, i) {
                         return messages[i];
                       },
-                      controller: control,
                     ),
                   );
                 }),
@@ -211,7 +208,7 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                     icon: Icons.image,
                     action: () async {
                       image = await getFuture(
-                          ImagePicker.pickImage(source: ImageSource.gallery));
+                          ImagePicker.pickImage(source: ImageSource.gallery,imageQuality: 20));
 
                       if (image != null) {
                         loadingAlertDialog(context, "Envoi en cours ...");
@@ -242,7 +239,7 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                   ButtonIcon(icon: Icons.camera_alt,
                      action: () async {
                         image = await getFuture(
-                           ImagePicker.pickImage(source: ImageSource.camera));
+                           ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 20));
 
                         if (image != null) {
                            loadingAlertDialog(context, "Envoi en cours ...");
