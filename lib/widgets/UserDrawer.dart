@@ -1,12 +1,12 @@
-import 'dart:async';
 import 'package:lets_chat/LetsChatApp.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lets_chat/widgets/AlertDialog.dart';
 import 'package:lets_chat/views/EditScreen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:lets_chat/style/style.dart';
+import 'package:lets_chat/widgets/ButtonIcon.dart';
 
 class UserDrawer extends StatefulWidget {
   @override
@@ -31,9 +31,9 @@ class _UserDrawerState extends State<UserDrawer> {
            future: FirebaseStorage.instance.ref().child('profils/${widget.userPseudo}').getDownloadURL(),
            builder: (context,url) {
              if(!url.hasData) {
-               return Image.asset(defaultAvatarImg,height: 200,fit: BoxFit.cover,);
+               return Image.network(defaultAvatarImg,height: 200,fit: BoxFit.scaleDown);
              }else {
-               return Image.network(url.data, height: 200,fit: BoxFit.scaleDown,);
+               return Image.network(url.data, height: 200,fit: BoxFit.cover,);
              }
            }
         ),
@@ -43,11 +43,14 @@ class _UserDrawerState extends State<UserDrawer> {
               builder: (context, snapshot) {
 
                 if(!snapshot.hasData) {
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 } else {
                   return Drawer(
+                    elevation: 20,
                     child: SingleChildScrollView(
+                      physics: BouncingScrollPhysics(),
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Row(
                             children: <Widget>[
@@ -80,29 +83,33 @@ class _UserDrawerState extends State<UserDrawer> {
               }
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(CupertinoIcons.clear_circled,color: Colors.black,size: 30,),
-              tooltip: "Déconnexion",
-              onPressed: () {
-                deConnexion(context,widget.userPseudo);
-              },
-            ),
 
-            IconButton(
-              tooltip: "Editer",
-              icon: Icon(CupertinoIcons.create,color: Colors.black,size: 30,),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) {
-                    return EditScreen(context: context,pseudo: widget.userPseudo,);
-                  })
-                );
-              },
-            ),
-          ],
+        Container(
+          padding: EdgeInsets.all(15),
+          color: background,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+
+              ButtonIcon(
+                icon: Icons.clear,
+                action: () {
+                  deConnexion(context,widget.userPseudo);
+                },
+              ),
+
+              ButtonIcon(
+                icon: Icons.create,
+                action: () {
+                  Navigator.of(context).push(
+                     MaterialPageRoute(builder: (context) {
+                       return EditScreen(context: context,pseudo: widget.userPseudo,);
+                     })
+                  );
+                },
+              ),
+            ],
+          ),
         )
       ],
     );
@@ -128,14 +135,20 @@ class _UserDrawerState extends State<UserDrawer> {
             ],
           ),
           decoration: BoxDecoration(
-             borderRadius: BorderRadius.circular(10),
-             border: Border.all(color: Colors.black)
+            color: background,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: softShadows,
           ),
         ),
       );
     } else {
       return Expanded(
         child: Container(
+          decoration: BoxDecoration(
+             color: background,
+             borderRadius: BorderRadius.circular(20),
+             boxShadow: softShadows,
+          ),
           margin: EdgeInsets.only(top: 20,left: 20,right: 20),
           padding: EdgeInsets.all(20),
           child: Column(
@@ -143,10 +156,6 @@ class _UserDrawerState extends State<UserDrawer> {
               Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
               Text(data[key], style: TextStyle(fontSize: 15,color: Colors.grey),)
             ],
-          ),
-          decoration: BoxDecoration(
-             borderRadius: BorderRadius.circular(10),
-             border: Border.all(color: Colors.black)
           ),
         ),
       );

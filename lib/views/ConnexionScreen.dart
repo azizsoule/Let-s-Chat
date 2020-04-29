@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lets_chat/views/ConnectedUserHomeScreen.dart';
 import 'dart:io';
 import 'package:lets_chat/functions/functions.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 // ignore: must_be_immutable
 class ConnexionScreen extends StatelessWidget {
@@ -32,6 +33,7 @@ class ConnexionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: BouncingScrollPhysics(),
       child: Container(
         margin: EdgeInsets.only(top: 80, left: 50, right: 50, bottom: 80),
         child: Column(
@@ -115,6 +117,13 @@ class ConnexionScreen extends StatelessWidget {
           .collection('comptes')
           .document(pseudo)
           .updateData({"connected": true});
+
+      await FirebaseMessaging().getToken().then((token) {
+        fireStoreConnector
+           .collection('comptes')
+           .document(pseudo)
+           .updateData({"token": token});
+      });
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) {

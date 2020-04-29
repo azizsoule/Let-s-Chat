@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lets_chat/functions/functions.dart';
 import 'package:lets_chat/style/style.dart';
 import 'package:lets_chat/widgets/UserDrawer.dart';
 import 'package:lets_chat/views/ConversationUserScreen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:lets_chat/widgets/avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:lets_chat/widgets/ButtonIcon.dart';
+import 'package:lets_chat/functions/functions.dart';
 
 class ConnectedUserHomeScreen extends StatefulWidget {
   List<Widget> items = [];
@@ -22,7 +25,11 @@ class ConnectedUserHomeScreen extends StatefulWidget {
 
 class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
 
+   int index = 0;
+
   final FirebaseMessaging _fcm = new FirebaseMessaging();
+
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   String defaultAvatarImg =
       "https://firebasestorage.googleapis.com/v0/b/letschat-1234.appspot.com/o/avatar.png?alt=media&token=b7575fdd-ca24-4569-b0c5-fb597e52da23";
@@ -34,20 +41,51 @@ class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
     // TODO: implement initState
     super.initState();
 
+    var initilizationSettingAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    var initilizationSettingIos = IOSInitializationSettings();
+
+    var initilizationSettings = InitializationSettings(
+       initilizationSettingAndroid, initilizationSettingIos);
+
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    flutterLocalNotificationsPlugin.initialize(initilizationSettings,
+       onSelectNotification: (payload) {
+          return null;
+       });
+
     _fcm.configure(
        onMessage: (message) {
-         print(message);
-         return null;
+         return _showNotificationWithDefaultSound(message);
        },
        onResume: (message) {
          print(message);
-         return null;
+         return _showNotificationWithDefaultSound(message);
        },
        onLaunch: (message) {
          print(message);
-         return null;
+         return _showNotificationWithDefaultSound(message);
        }
     );
+  }
+
+  Future _showNotificationWithDefaultSound(message) async {
+     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+     var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+     await flutterLocalNotificationsPlugin.show(
+        index,
+        message['notification']['title'],
+        message['notification']['body'],
+        platformChannelSpecifics,
+        payload: message['notification']['title']
+     );
+     index++;
   }
 
   @override
@@ -90,20 +128,7 @@ class _ConnectedUserHomeScreenState extends State<ConnectedUserHomeScreen> {
                             color: textColor,
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold)),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                            boxShadow: softShadows,
-                            color: background,
-                            shape: BoxShape.circle),
-                        child: Icon(
-                          Icons.camera_alt,
-                          size: 16.0,
-                          color: Theme.of(context).primaryColor,
-                        ))
+
                   ],
                 ),
               ),

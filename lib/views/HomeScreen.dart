@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
    @override
    Widget build(BuildContext context) {
       return Scaffold(
-
+         backgroundColor: background,
          bottomNavigationBar: BottomNavigationBar(
             showUnselectedLabels: false,
             currentIndex: index,

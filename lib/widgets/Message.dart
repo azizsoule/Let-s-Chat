@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
@@ -9,14 +10,15 @@ import 'package:lets_chat/widgets/ButtonIcon.dart';
 import 'package:lets_chat/widgets/avatar.dart';
 import 'package:photo_view/photo_view.dart';
 
-class Message extends StatelessWidget {
+class LcMessage extends StatelessWidget {
   String message;
   String expe;
   String userPseudo;
   String type;
   String url;
+  Timestamp date;
 
-  Message(this.expe, this.message, this.userPseudo, this.type, this.url);
+  LcMessage(this.expe, this.message, this.userPseudo, this.type, this.url,this.date);
 
   String get getMessage => this.message;
 
@@ -100,17 +102,34 @@ class Message extends StatelessWidget {
               mainAxisAlignment: alignement(),
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Flexible(
-                  child: Container(
-                    constraints: BoxConstraints(
-                        minWidth: 50,
-                        maxWidth: MediaQuery.of(context).size.width * 0.6),
-                    padding: EdgeInsets.only(
-                        top: 14, bottom: 14, left: 15, right: 15),
-                    margin: pad(),
-                    child: Text(message, style: style()),
-                    decoration: deco(),
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Flexible(
+                      child: Container(
+                        constraints: BoxConstraints(
+                           minWidth: 50,
+                           maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        padding: EdgeInsets.only(
+                           top: 14, bottom: 14, left: 15, right: 15),
+                        margin: pad(),
+                        child: Text(message, style: style()),
+                        decoration: deco(),
+                      ),
+                    ),
+
+                    Flexible(
+                      child: Container(
+                        constraints: BoxConstraints(
+                           minWidth: 50,
+                           maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        padding: EdgeInsets.only(
+                            bottom: 14, left: 15, right: 15),
+                        child: Text("${getDay(date)} ${date.toDate().day}/${date.toDate().month}/${date.toDate().year} à ${date.toDate().hour}:${date.toDate().minute}", style: TextStyle(color: Colors.grey),),
+                      ),
+                    ),
+                  ],
                 )
               ],
             ),
@@ -179,18 +198,36 @@ class Message extends StatelessWidget {
                         }
                       }),
                 ),
-                Flexible(
-                  child: Container(
-                    constraints: BoxConstraints(
-                        minWidth: 50,
-                        maxWidth: MediaQuery.of(context).size.width * 0.6),
-                    margin: pad(),
-                    child: Text(message, style: style()),
-                    padding: EdgeInsets.only(
-                        top: 14, bottom: 14, left: 15, right: 15),
-                    decoration: deco(),
-                  ),
-                )
+
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Flexible(
+                      child: Container(
+                        constraints: BoxConstraints(
+                           minWidth: 50,
+                           maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        margin: pad(),
+                        child: Text(message, style: style()),
+                        padding: EdgeInsets.only(
+                           top: 14, bottom: 14, left: 15, right: 15),
+                        decoration: deco(),
+                      ),
+                    ),
+
+                    Flexible(
+                      child: Container(
+                        constraints: BoxConstraints(
+                           minWidth: 50,
+                           maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        padding: EdgeInsets.only(
+                           bottom: 14, left: 15, right: 15),
+                        child: Text("${getDay(date)} ${date.toDate().day}/${date.toDate().month}/${date.toDate().year} à ${date.toDate().hour}:${date.toDate().minute}", style: TextStyle(color: Colors.grey),),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           );
@@ -242,35 +279,51 @@ class Message extends StatelessWidget {
               mainAxisAlignment: alignement(),
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Flexible(
-                  child: Container(
-                    margin: pad(),
-                    decoration: deco(),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Flexible(
                       child: Container(
-                        constraints: BoxConstraints(
-                            minWidth: 50,
-                            maxWidth: MediaQuery.of(context).size.width * 0.6),
-                        padding: EdgeInsets.only(
-                            top: 14, bottom: 14, left: 15, right: 15),
-                        child: FutureBuilder(
-                            future: FirebaseStorage.instance
-                                .ref()
-                                .child(this.url)
-                                .getDownloadURL(),
-                            builder: (context, link) {
-                              if (!link.hasData) {
-                                return CircularProgressIndicator(
-                                  backgroundColor: Colors.black,
-                                );
-                              } else {
-                                return Image.network(link.data);
-                              }
-                            }),
+                        margin: pad(),
+                        decoration: deco(),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            constraints: BoxConstraints(
+                                minWidth: 50,
+                                maxWidth: MediaQuery.of(context).size.width * 0.6),
+                            padding: EdgeInsets.only(
+                                top: 14, bottom: 14, left: 15, right: 15),
+                            child: FutureBuilder(
+                                future: FirebaseStorage.instance
+                                    .ref()
+                                    .child(this.url)
+                                    .getDownloadURL(),
+                                builder: (context, link) {
+                                  if (!link.hasData) {
+                                    return CircularProgressIndicator(
+                                      backgroundColor: Colors.black,
+                                    );
+                                  } else {
+                                    return Image.network(link.data);
+                                  }
+                                }),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    Flexible(
+                      child: Container(
+                        constraints: BoxConstraints(
+                           minWidth: 50,
+                           maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        padding: EdgeInsets.only(
+                           bottom: 14, left: 15, right: 15),
+                        child: Text("${getDay(date)} ${date.toDate().day}/${date.toDate().month}/${date.toDate().year} à ${date.toDate().hour}:${date.toDate().minute}", style: TextStyle(color: Colors.grey),),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -345,28 +398,45 @@ class Message extends StatelessWidget {
                         }
                       }),
                 ),
-                Container(
-                  margin: pad(),
-                  decoration: deco(),
-                  constraints: BoxConstraints(
-                      minWidth: 50,
-                      maxWidth: MediaQuery.of(context).size.width * 0.6),
-                  padding:
-                      EdgeInsets.only(top: 14, bottom: 14, left: 15, right: 15),
-                  child: FutureBuilder(
-                      future: FirebaseStorage.instance
-                          .ref()
-                          .child(url)
-                          .getDownloadURL(),
-                      builder: (context, link) {
-                        if (!link.hasData) {
-                          return CircularProgressIndicator(
-                            backgroundColor: Colors.black,
-                          );
-                        } else {
-                          return Image.network(link.data);
-                        }
-                      }),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: pad(),
+                      decoration: deco(),
+                      constraints: BoxConstraints(
+                          minWidth: 50,
+                          maxWidth: MediaQuery.of(context).size.width * 0.6),
+                      padding:
+                          EdgeInsets.only(top: 14, bottom: 14, left: 15, right: 15),
+                      child: FutureBuilder(
+                          future: FirebaseStorage.instance
+                              .ref()
+                              .child(url)
+                              .getDownloadURL(),
+                          builder: (context, link) {
+                            if (!link.hasData) {
+                              return CircularProgressIndicator(
+                                backgroundColor: Colors.black,
+                              );
+                            } else {
+                              return Image.network(link.data);
+                            }
+                          }),
+                    ),
+
+                    Flexible(
+                      child: Container(
+                        constraints: BoxConstraints(
+                           minWidth: 50,
+                           maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        padding: EdgeInsets.only(
+                           bottom: 14, left: 15, right: 15),
+                        child: Text("${getDay(date)} ${date.toDate().day}/${date.toDate().month}/${date.toDate().year} à ${date.toDate().hour}:${date.toDate().minute}", style: TextStyle(color: Colors.grey),),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

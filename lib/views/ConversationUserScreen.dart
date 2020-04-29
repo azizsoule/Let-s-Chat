@@ -14,6 +14,9 @@ import 'package:lets_chat/widgets/AlertDialog.dart';
 import 'package:lets_chat/style/style.dart';
 import 'package:lets_chat/widgets/avatar.dart';
 import 'package:lets_chat/widgets/ButtonIcon.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'InfoScreen.dart';
 
 class ConversationUserScreen extends StatefulWidget {
   String friend;
@@ -48,18 +51,63 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
     padLeft: 20,
     padRight: 20,
     borderWidth: 2,
-     hinText: "Entrez votre message ...",
+    hinText: "Entrez votre message ...",
   );
+
+  FirebaseMessaging _fcm = new FirebaseMessaging();
+
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+  int index = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     this.updateSharePref();
+
+    var initilizationSettingAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    var initilizationSettingIos = IOSInitializationSettings();
+
+    var initilizationSettings = InitializationSettings(
+        initilizationSettingAndroid, initilizationSettingIos);
+
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    flutterLocalNotificationsPlugin.initialize(initilizationSettings,
+        onSelectNotification: (payload) {
+      return null;
+    });
+
+    _fcm.configure(onMessage: (message) {
+      return null;
+    }, onResume: (message) {
+      return _showNotificationWithDefaultSound(message);
+    }, onLaunch: (message) {
+      return _showNotificationWithDefaultSound(message);
+    });
   }
 
   updateSharePref() async {
     this.preferences = await SharedPreferences.getInstance();
+  }
+
+  Future _showNotificationWithDefaultSound(message) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        index,
+        message['notification']['title'],
+        message['notification']['body'],
+        platformChannelSpecifics,
+        payload: message['notification']['title']);
+    index++;
   }
 
   @override
@@ -112,7 +160,7 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                       children: [
                         Text(
                           widget.friend,
-                           style: TextStyle(
+                          style: TextStyle(
                               color: textColor,
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold),
@@ -128,12 +176,21 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 10.0),
-                  ButtonIcon(icon: Icons.phone),
-                  SizedBox(width: 10.0),
-                  ButtonIcon(icon: Icons.videocam),
-                  SizedBox(width: 10.0),
-                  ButtonIcon(icon: Icons.info),
+                  //SizedBox(width: 10.0),
+                  //ButtonIcon(icon: Icons.phone),
+                  //SizedBox(width: 10.0),
+                  //ButtonIcon(icon: Icons.videocam),
+                  //SizedBox(width: 10.0),
+                  ButtonIcon(
+                    icon: Icons.info,
+                    action: () {
+                       Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) {
+                             return InfoScreen(widget.friend);
+                          }
+                       ));
+                    },
+                  ),
                 ],
               ),
             ),
@@ -152,12 +209,13 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                             docSnap.data['destinataireUid'] == widget.friend) ||
                         (docSnap.data['expediteurUid'] == widget.friend &&
                             docSnap.data['destinataireUid'] == widget.user)) {
-                      messages.add(Message(
+                      messages.add(LcMessage(
                           docSnap.data['expediteurUid'],
                           docSnap.data['content'],
                           widget.user,
                           docSnap.data['type'],
-                          docSnap.data['url']));
+                          docSnap.data['url'],
+                          docSnap.data['date']));
                     }
                   }
 
@@ -169,13 +227,14 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                               top: 13, bottom: 13, left: 20, right: 20),
                           child: Text(
                             "Vous pouvez envoyer des messages à ${widget.friend}",
-                            style: TextStyle(color: textColor,),
+                            style: TextStyle(
+                              color: textColor,
+                            ),
                           ),
                           decoration: BoxDecoration(
-                            color: background,
-                            borderRadius: BorderRadius.circular(20),
-                             boxShadow: softShadows
-                          ),
+                              color: background,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: softShadows),
                         ),
                       ),
                     );
@@ -207,8 +266,8 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                   ButtonIcon(
                     icon: Icons.image,
                     action: () async {
-                      image = await getFuture(
-                          ImagePicker.pickImage(source: ImageSource.gallery,imageQuality: 20));
+                      image = await getFuture(ImagePicker.pickImage(
+                          source: ImageSource.gallery, imageQuality: 20));
 
                       if (image != null) {
                         loadingAlertDialog(context, "Envoi en cours ...");
@@ -236,61 +295,62 @@ class _ConversationUserScreenState extends State<ConversationUserScreen> {
                     },
                   ),
                   SizedBox(width: 10.0),
-                  ButtonIcon(icon: Icons.camera_alt,
-                     action: () async {
-                        image = await getFuture(
-                           ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 20));
+                  ButtonIcon(
+                    icon: Icons.camera_alt,
+                    action: () async {
+                      image = await getFuture(ImagePicker.pickImage(
+                          source: ImageSource.camera, imageQuality: 20));
 
-                        if (image != null) {
-                           loadingAlertDialog(context, "Envoi en cours ...");
-                           time = Timestamp.now();
-                           imageName = time.seconds.toString();
+                      if (image != null) {
+                        loadingAlertDialog(context, "Envoi en cours ...");
+                        time = Timestamp.now();
+                        imageName = time.seconds.toString();
 
-                           StorageReference storageReference = FirebaseStorage
-                              .instance
-                              .ref()
-                              .child('chats/$imageName');
-                           StorageUploadTask uploadTask =
-                           storageReference.putFile(image);
-                           await uploadTask.onComplete;
+                        StorageReference storageReference = FirebaseStorage
+                            .instance
+                            .ref()
+                            .child('chats/$imageName');
+                        StorageUploadTask uploadTask =
+                            storageReference.putFile(image);
+                        await uploadTask.onComplete;
 
-                           this.sendMessage(
-                              this.preferences.getString('user'),
-                              message.getControllerText,
-                              widget.friend,
-                              time,
-                              "image",
-                              "chats/$imageName");
+                        this.sendMessage(
+                            this.preferences.getString('user'),
+                            message.getControllerText,
+                            widget.friend,
+                            time,
+                            "image",
+                            "chats/$imageName");
 
-                           Navigator.of(context).pop();
-                        }
-                     },
+                        Navigator.of(context).pop();
+                      }
+                    },
                   ),
                   SizedBox(width: 10.0),
                   ButtonIcon(icon: Icons.mic),
-                   SizedBox(width: 10.0),
+                  SizedBox(width: 10.0),
                   Expanded(
                     child: message,
                   ),
-                   SizedBox(width: 10.0),
+                  SizedBox(width: 10.0),
                   ButtonIcon(
-                     icon: Icons.send,
-                     action: () {
-                        if (message.getControllerText.isNotEmpty &&
-                           message.getControllerText.trim() != "") {
-                           this.sendMessage(
-                              this.preferences.getString('user'),
-                              message.getControllerText,
-                              widget.friend,
-                              Timestamp.now(),
-                              "text",
-                              "");
-                           setState(() {
-                              //messages.add(Message(this.preferences.getString('userPseudo'), message.getControllerText));
-                              message.setControllerText = "";
-                           });
-                        }
-                     },
+                    icon: Icons.send,
+                    action: () {
+                      if (message.getControllerText.isNotEmpty &&
+                          message.getControllerText.trim() != "") {
+                        this.sendMessage(
+                            this.preferences.getString('user'),
+                            message.getControllerText,
+                            widget.friend,
+                            Timestamp.now(),
+                            "text",
+                            "");
+                        setState(() {
+                          //messages.add(Message(this.preferences.getString('userPseudo'), message.getControllerText));
+                          message.setControllerText = "";
+                        });
+                      }
+                    },
                   )
                 ],
               ),

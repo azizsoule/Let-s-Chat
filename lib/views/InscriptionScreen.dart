@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:lets_chat/widgets/AlertDialog.dart';
 import 'package:lets_chat/functions/functions.dart';
 import 'dart:io';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 class InscriptionScreen extends StatefulWidget {
@@ -28,28 +27,10 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
 
    final PersonalInput confirmPassword = new PersonalInput(hinText: "Confirm Password", color: Colors.black,control: new TextEditingController(),icon: Icon(CupertinoIcons.padlock),obscur: true,isPassWordField: true,);
 
-   final FirebaseMessaging _fcm = new FirebaseMessaging();
-
-   var token;
-
-   @override
-   void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    dynamic getTok() async{
-       return await getFuture(_fcm.getToken());
-    }
-
-    token = getTok();
-
-    print(token);
-
-  }
-
    @override
    Widget build(BuildContext context) {
       return SingleChildScrollView(
+         physics: BouncingScrollPhysics(),
          child: Container(
             margin: EdgeInsets.only(top: 80,left: 50,right: 50,bottom: 80),
             child: Column(
