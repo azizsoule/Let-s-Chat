@@ -23,7 +23,15 @@ samples, guidance on mobile development, and a full API reference.
 # Screenshots
 |           Home           |                 Chat      |
 | :---------------------------------: | :----------------------------------: |
-| ![home-screen](screenshots/1.jpg) | ![chat-screen](screenshots/2.jpg) |
+| ![home-view](1.jpg) | ![chat-view](2.jpg) |
+
+|           Drawer           |
+| :---------------------------------: |
+| ![user-drawer](3.jpg) |
+
+|           Settings           |                 Settings      |
+| :---------------------------------: | :----------------------------------: |
+| ![settings-1](4.jpg) | ![settings-2](5.jpg) |
 
 # Credits
 Thanks to camphan & camphan12993 for the [chat app UI](https://github.com/camphan12993/chat-app-ui).
