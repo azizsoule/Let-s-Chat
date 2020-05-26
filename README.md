@@ -1,4 +1,4 @@
-# lets_chat
+# Let's Chat
 
 A new Flutter application.
 I want to build a messaging app using firebase.
